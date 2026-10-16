@@ -6,12 +6,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n server,client -c blue,green \"npm run dev -w @pixel-wall/server\" \"npm run dev -w @pixel-wall/client\"",
-    "build": "npm run build -w @pixel-wall/shared && npm run build -w @pixel-wall/server && npm run build -w @pixel-wall/client",
+    "dev": "concurrently -n server,client -c blue,green \"yarn workspace @pixel-wall/server dev\" \"yarn workspace @pixel-wall/client dev\"",
+    "build": "yarn workspace @pixel-wall/shared build && yarn workspace @pixel-wall/server build && yarn workspace @pixel-wall/client build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run build -w @pixel-wall/shared && npm run typecheck --workspaces --if-present",
+    "typecheck": "yarn workspace @pixel-wall/shared build && yarn workspace @pixel-wall/server typecheck && yarn workspace @pixel-wall/client typecheck",
     "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
@@ -26,6 +26,7 @@
     "svelte": "^5.57.2",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2",
-    "vitest": "^5.0.5"
-  }
+    "vitest": "~5.0.4"
+  },
+  "packageManager": "yarn@4.18.1"
 }
