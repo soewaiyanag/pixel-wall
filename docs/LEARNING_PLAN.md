@@ -12,7 +12,7 @@ A shared pixel board that many people draw on at the same time. Every pixel anyo
 - Anyone can paint over anyone else's pixel. No undo.
 - No accounts: each browser gets an anonymous ID.
 - The board survives restarts because it is stored in Redis.
-- Stack: TypeScript everywhere. Vite and plain TypeScript with an HTML canvas on the front end. Node.js with `ws` on the server. Redis for the board and the cooldowns. Docker for deployment.
+- Stack: TypeScript everywhere. Vite and Svelte 5 for the UI, with plain TypeScript and an HTML canvas for drawing. Node.js with Fastify and `@fastify/websocket` on the server. Redis for the board and the cooldowns. Docker for deployment.
 
 ## How to learn: books or other resources?
 
@@ -20,7 +20,7 @@ Use both, but read very little. This project is mostly about WebSockets, Redis a
 
 - **Build first, read second.** Each week starts with a small goal. Read only the chapter or doc page that helps you reach it, then build.
 - **Two books are your main references:** _Effective TypeScript_ and _Efficient Node.js_. Read the chapters on demand, not front to back.
-- **Official docs for the new parts:** MDN for WebSockets, canvas and pointer events, plus the Redis, `ws`, zod and Docker docs.
+- **Official docs for the new parts:** MDN for WebSockets, canvas and pointer events, plus the Fastify, Svelte, Redis, ioredis, zod and Docker docs.
 - **Don't start a new book** for this project. Reading six books would feel like progress and delay the build.
 - **Stuck for more than 45 minutes?** Write down what you expected and what happened, then ask Claude to explain the concept. You write the fix.
 
@@ -36,32 +36,34 @@ I went by the titles you listed and have not checked each table of contents, so 
 | You Don't Know JS Yet: Scope & Closures (Simpson)                   | Optional           | A quick skim if closures in your handlers confuse you                                                       |
 | How Computers Really Work (Justice)                                 | Optional           | Light background on how networks and processes work, if curious. Skip if short on time                      |
 | Programming TypeScript (Cherny), Learning TypeScript (Goldberg)     | Skip               | Overlaps with Effective TypeScript                                                                          |
-| Full-Stack React, TypeScript, and Node; React books; Tailwind guide | Skip               | This project uses a plain canvas, not React or CSS frameworks                                               |
+| Full-Stack React, TypeScript, and Node; React books; Tailwind guide | Skip               | This project uses Svelte 5 and a plain canvas, not React or CSS frameworks                                  |
 | Practical SQL                                                       | Separate track     | Keep your 3 hours a week of SQL for job skills, but it isn't part of this project                           |
 | The other languages, Laravel, Blazor, Flutter, ML and AI books      | Skip               | Not related                                                                                                 |
 
 ## Skills map: what to learn and where
 
-| Skill                                                            | Learn from                                                                                                                            | Week |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---- |
-| npm workspaces and a TypeScript monorepo                         | [npm workspaces docs](https://docs.npmjs.com/cli/using-npm/workspaces), Effective TypeScript (modules and config chapters)            | 1    |
-| Vite and a plain TypeScript front end                            | [Vite guide](https://vite.dev/guide/)                                                                                                 | 1    |
-| Node event loop, streams, HTTP server                            | Efficient Node.js, [Node.js API docs](https://nodejs.org/docs/latest/api/)                                                            | 1    |
-| WebSocket basics: handshake, messages, close, ping               | [MDN WebSockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API), [ws library](https://github.com/websockets/ws) | 1    |
-| Canvas 2D: draw a grid, crisp pixels, device pixel ratio         | [MDN Canvas tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)                                           | 2    |
-| Typed messages shared by client and server                       | Effective TypeScript (types and unions chapters)                                                                                      | 2    |
-| Server-authoritative state (the server decides, clients display) | Your own notes. Draw the message flow on paper first                                                                                  | 3    |
-| Message validation                                               | [zod docs](https://zod.dev)                                                                                                           | 4    |
-| Redis basics: strings, expiry, set-if-missing, atomic commands   | [Redis docs](https://redis.io/docs/)                                                                                                  | 4    |
-| Storing the board compactly                                      | Redis docs on strings and bit operations                                                                                              | 4    |
-| Pan and zoom with a canvas transform, zoom around the cursor     | MDN Canvas transformations                                                                                                            | 5    |
-| Pointer events, drag and pinch                                   | [MDN Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events)                                                 | 5    |
-| Reconnecting with backoff, and re-syncing the board              | MDN WebSocket docs, your own design                                                                                                   | 6    |
-| Tests: unit and a WebSocket integration test                     | [Vitest](https://vitest.dev)                                                                                                          | 6    |
-| Docker and Docker Compose                                        | [Docker get started](https://docs.docker.com/get-started/), The Complete Developer                                                    | 7    |
-| CI with GitHub Actions                                           | [GitHub Actions docs](https://docs.github.com/en/actions)                                                                             | 7    |
-| Rate limiting and basic abuse protection                         | Redis docs, your own design                                                                                                           | 7    |
-| Deploying with WebSockets, and load testing                      | Your host's docs, a small script you write                                                                                            | 8    |
+| Skill                                                                    | Learn from                                                                                                                                                                                                  | Week |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Yarn workspaces and a TypeScript monorepo                                | [Yarn workspaces docs](https://yarnpkg.com/features/workspaces), Effective TypeScript (modules and config chapters)                                                                                         | 1    |
+| Vite and a Svelte 5 front end                                            | [Vite guide](https://vite.dev/guide/), [Svelte docs](https://svelte.dev/docs/svelte)                                                                                                                        | 1    |
+| Node event loop, streams, HTTP server                                    | Efficient Node.js, [Node.js API docs](https://nodejs.org/docs/latest/api/)                                                                                                                                  | 1    |
+| WebSocket basics: handshake, messages, close, ping                       | [MDN WebSockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API), [@fastify/websocket](https://github.com/fastify/fastify-websocket), [Fastify docs](https://fastify.dev/docs/latest/) | 1    |
+| Svelte 5 runes: `$state`, `$derived`, `$effect`                          | [Svelte docs: Runes](https://svelte.dev/docs/svelte/what-are-runes)                                                                                                                                         | 1    |
+| Canvas 2D: draw a grid, crisp pixels, device pixel ratio                 | [MDN Canvas tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)                                                                                                                 | 2    |
+| Typed messages shared by client and server                               | Effective TypeScript (types and unions chapters)                                                                                                                                                            | 2    |
+| Server-authoritative state (the server decides, clients display)         | Your own notes. Draw the message flow on paper first                                                                                                                                                        | 3    |
+| Message validation                                                       | [zod docs](https://zod.dev)                                                                                                                                                                                 | 4    |
+| Redis basics: strings, expiry, set-if-missing, atomic commands           | [Redis docs](https://redis.io/docs/)                                                                                                                                                                        | 4    |
+| Binary data: ArrayBuffer, typed arrays, bit packing (board and messages) | [MDN: Typed arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Typed_arrays)                                                                                                             | 2    |
+| Storing the board compactly                                              | Redis docs on strings and bit operations                                                                                                                                                                    | 4    |
+| Pan and zoom with a canvas transform, zoom around the cursor             | MDN Canvas transformations                                                                                                                                                                                  | 5    |
+| Pointer events, drag and pinch                                           | [MDN Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events)                                                                                                                       | 5    |
+| Reconnecting with backoff, and re-syncing the board                      | MDN WebSocket docs, your own design                                                                                                                                                                         | 6    |
+| Tests: unit and a WebSocket integration test                             | [Vitest](https://vitest.dev)                                                                                                                                                                                | 6    |
+| Docker and Docker Compose                                                | [Docker get started](https://docs.docker.com/get-started/), The Complete Developer                                                                                                                          | 7    |
+| CI with GitHub Actions                                                   | [GitHub Actions docs](https://docs.github.com/en/actions)                                                                                                                                                   | 7    |
+| Rate limiting and basic abuse protection                                 | Redis docs, your own design                                                                                                                                                                                 | 7    |
+| Deploying with WebSockets, and load testing                              | Your host's docs, a small script you write                                                                                                                                                                  | 8    |
 
 ## Week-by-week plan
 
@@ -69,13 +71,13 @@ About 12 hours a week for the project, plus your 3 hours of web job skills.
 
 ### Week 1 (Oct 17–23): Project setup and your first WebSocket
 
-**Learn:** npm workspaces, Vite, the Node HTTP server, how a WebSocket connection starts and what a message is.
+**Learn:** Yarn workspaces, Fastify plugins and routes, Vite, Svelte 5 runes, the Node HTTP server, how a WebSocket connection starts and what a message is.
 
 **Build:** the repo with `shared`, `server` and `client` packages. A server that accepts a WebSocket and sends every message it receives back to all connected clients. A page with a text box that shows messages from other tabs.
 
 **Done when:** you type in one browser tab and the text appears in another.
 
-- [ ] Repo, workspaces, TypeScript config, and `AGENTS.md` committed
+- [x] Repo, workspaces, TypeScript config, CI, and `AGENTS.md` committed (already set up)
 - [ ] Server accepts connections and logs connects and disconnects
 - [ ] Broadcast works between two tabs
 
@@ -107,14 +109,14 @@ About 12 hours a week for the project, plus your 3 hours of web job skills.
 
 **Learn:** zod schemas, Redis strings, expiry keys and atomic commands, and how to store a board compactly.
 
-**Build:** validate every incoming message with zod. Move the board into Redis and the cooldown into expiring keys. Run Redis locally with Docker Compose.
+**Build:** validate every incoming message with zod. Move the board into Redis and the cooldown into expiring keys. Run Redis locally with the existing `docker-compose.yml` and connect with ioredis.
 
 **Done when:** you restart the server and the board is still there, and a malformed message is rejected without crashing the server.
 
 - [ ] zod schemas for every message type
 - [ ] Board stored in Redis and loaded on start
 - [ ] Cooldown uses a Redis expiring key
-- [ ] `docker-compose.yml` starts Redis
+- [x] `docker-compose.yml` starts Redis (already set up)
 
 ### Week 5 (Nov 14–20): Zoom and pan, and a bigger board
 
@@ -144,12 +146,12 @@ About 12 hours a week for the project, plus your 3 hours of web job skills.
 
 **Learn:** Dockerfiles, multi-stage builds, GitHub Actions, and basic rate limiting.
 
-**Build:** a Dockerfile for the server and a Compose file for server plus Redis. A GitHub Actions workflow that lints, type-checks and tests. Limits on connections per address, on message size, and on message rate.
+**Build:** a Dockerfile for the server and a Compose file for server plus Redis. Extend the existing GitHub Actions workflow (it already lints, checks formatting, type-checks, tests and builds) with Docker image builds. Limits on connections per address, on message size, and on message rate.
 
 **Done when:** `docker compose up` starts the whole app, and CI is green on every push.
 
 - [ ] Dockerfile and Compose file
-- [ ] CI workflow
+- [ ] CI covers the Docker build
 - [ ] Message size and rate limits
 - [ ] Origin check on connections
 
@@ -193,12 +195,15 @@ Links were written from memory and not re-checked today, so confirm each one ope
 - [MDN: WebSockets API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 - [MDN: Canvas tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial)
 - [MDN: Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events)
-- [ws on GitHub](https://github.com/websockets/ws)
+- [Fastify docs](https://fastify.dev/docs/latest/)
+- [@fastify/websocket](https://github.com/fastify/fastify-websocket)
+- [Svelte docs](https://svelte.dev/docs/svelte)
+- [ioredis](https://github.com/redis/ioredis)
 - [Redis documentation](https://redis.io/docs/)
 - [zod](https://zod.dev)
 - [Vite guide](https://vite.dev/guide/)
 - [Vitest](https://vitest.dev)
 - [Node.js API docs](https://nodejs.org/docs/latest/api/)
-- [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces)
+- [Yarn workspaces](https://yarnpkg.com/features/workspaces)
 - [Docker: get started](https://docs.docker.com/get-started/)
 - [GitHub Actions docs](https://docs.github.com/en/actions)
