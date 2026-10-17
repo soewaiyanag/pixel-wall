@@ -11,11 +11,13 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@pixel-wall/shared": "*"
+    "@pixel-wall/shared": "*",
+    "svelte": "^5.57.2"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "svelte-check": "^4.7.6",
+    "typescript": "^6",
     "vite": "^8.3.4"
   }
 }
